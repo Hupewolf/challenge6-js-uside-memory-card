@@ -1,0 +1,189 @@
+const game = document.getElementById("game");
+const scoreEl = document.getElementById("score");
+const timeEl = document.getElementById("time");
+const movesEl = document.getElementById("moves");
+
+// --- TIMER ---
+let startTime = null;
+let timerInterval = null;
+let gameStarted = false;
+
+function startTimer() {
+    startTime = Date.now();
+
+    timerInterval = setInterval(() => {
+        const now = Date.now();
+        const elapsed = now - startTime; // tổng mili-giây
+
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        const milliseconds = Math.floor((elapsed % 1000) / 10); // 2 số ms
+
+        // format:  mm:ss:ms
+        timeEl.textContent =
+            String(minutes).padStart(2, '0') + ":" +
+            String(seconds).padStart(2, '0') + ":" +
+            String(milliseconds).padStart(2, '0');
+
+    }, 50);
+}    
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+// --- GAME ---
+let emojis = ["🐶", "🐱", "🐼", "🐸", "🦊", "🐵", "🐰", "🐻"];
+emojis = [...emojis, ...emojis];
+emojis.sort(() => Math.random() - 0.5);
+
+let firstCard = null;
+let lock = false;
+let score = 0;
+let moves = 0;
+
+// RENDER BOARD
+emojis.forEach(emoji => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+        <div class="card-inner">
+            <div class="card-front">❓</div>
+            <div class="card-back">${emoji}</div>
+        </div>
+    `;
+
+    card.dataset.emoji = emoji;
+
+    card.addEventListener("click", () => {
+
+        // Start timer on first flip
+        if (!gameStarted) {
+            gameStarted = true;
+            startTimer();
+        }
+
+        if (lock || card.classList.contains("flipped")) return;
+
+        card.classList.add("flipped");
+
+        if (!firstCard) {
+            firstCard = card;
+        } else {
+            // Count move
+            moves++;
+            movesEl.textContent = moves;
+
+            if (firstCard.dataset.emoji === card.dataset.emoji) {
+                // Correct match
+                score++;
+                scoreEl.textContent = score;
+                firstCard = null;
+
+                // Win
+                if (score === 8) {
+                    stopTimer();
+                    setTimeout(() => {
+                        alert("🎉 Bạn thắng! Thời gian: " + timeEl.textContent + " | Lượt: " + moves);
+                    }, 300);
+                }
+            } else {
+                // Wrong → flip back
+                lock = true;
+                setTimeout(() => {
+                    firstCard.classList.remove("flipped");
+                    card.classList.remove("flipped");
+                    firstCard = null;
+                    lock = false;
+                }, 800);
+            }
+        }
+    });
+
+    game.appendChild(card);
+});
+
+document.getElementById("resetBtn").addEventListener("click", resetGame);
+
+function resetGame() {
+    // Reset timer
+    stopTimer();
+    timeEl.textContent = "0s";
+    gameStarted = false;
+
+    // Reset moves + score
+    moves = 0;
+    movesEl.textContent = moves;
+
+    score = 0;
+    scoreEl.textContent = score;
+
+    // Reset logic
+    firstCard = null;
+    lock = false;
+
+    // Clear board
+    game.innerHTML = "";
+
+    // Shuffle emoji mới
+    emojis.sort(() => Math.random() - 0.5);
+
+    // Render lại y như lần đầu
+    emojis.forEach(emoji => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+            <div class="card-inner">
+                <div class="card-front">❓</div>
+                <div class="card-back">${emoji}</div>
+            </div>
+        `;
+
+        card.dataset.emoji = emoji;
+
+        card.addEventListener("click", () => {
+            if (!gameStarted) {
+                gameStarted = true;
+                startTimer();
+            }
+
+            if (lock || card.classList.contains("flipped")) return;
+
+            card.classList.add("flipped");
+
+            if (!firstCard) {
+                firstCard = card;
+
+            } else {
+                moves++;
+                movesEl.textContent = moves;
+
+                if (firstCard.dataset.emoji === card.dataset.emoji) {
+                    score++;
+                    scoreEl.textContent = score;
+                    firstCard = null;
+
+                    if (score === 8) {
+                        stopTimer();
+                        setTimeout(() => {
+                            alert("🎉 Bạn thắng! Thời gian: " + timeEl.textContent + " | Lượt: " + moves);
+                        }, 300);
+                    }
+
+                } else {
+                    lock = true;
+                    setTimeout(() => {
+                        firstCard.classList.remove("flipped");
+                        card.classList.remove("flipped");
+                        firstCard = null;
+                        lock = false;
+                    }, 800);
+                }
+            }
+        });
+
+        game.appendChild(card);
+    });
+}
