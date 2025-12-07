@@ -94,7 +94,7 @@ emojis.forEach(emoji => {
                     card.classList.remove("flipped");
                     firstCard = null;
                     lock = false;
-                }, 800);
+                }, 200);
             }
         }
     });
@@ -178,7 +178,7 @@ function resetGame() {
                         card.classList.remove("flipped");
                         firstCard = null;
                         lock = false;
-                    }, 800);
+                    }, 200);
                 }
             }
         });
