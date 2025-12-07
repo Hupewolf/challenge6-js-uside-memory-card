@@ -3,7 +3,6 @@ const scoreEl = document.getElementById("score");
 const timeEl = document.getElementById("time");
 const movesEl = document.getElementById("moves");
 
-// --- TIMER ---
 let startTime = null;
 let timerInterval = null;
 let gameStarted = false;
@@ -13,12 +12,11 @@ function startTimer() {
 
     timerInterval = setInterval(() => {
         const now = Date.now();
-        const elapsed = now - startTime; // tổng mili-giây
+        const elapsed = now - startTime; 
 
         const minutes = Math.floor(elapsed / 60000);
         const seconds = Math.floor((elapsed % 60000) / 1000);
-        const milliseconds = Math.floor((elapsed % 1000) / 10); // 2 số ms
-
+        const milliseconds = Math.floor((elapsed % 1000) / 10); 
         // format:  mm:ss:ms
         timeEl.textContent =
             String(minutes).padStart(2, '0') + ":" +
@@ -33,8 +31,8 @@ function stopTimer() {
 }
 
 // --- GAME ---
-let emojis = ["🐶", "🐱", "🐼", "🐸", "🦊", "🐵", "🐰", "🐻"];
-emojis = [...emojis, ...emojis];
+let baseEmojis = ["🐶", "🐱", "🐼", "🐸", "🦊", "🐯", "🐷", "💩"];
+let emojis = [...baseEmojis, ...baseEmojis];
 emojis.sort(() => Math.random() - 0.5);
 
 let firstCard = null;
@@ -85,7 +83,7 @@ emojis.forEach(emoji => {
                 if (score === 8) {
                     stopTimer();
                     setTimeout(() => {
-                        alert("🎉 Bạn thắng! Thời gian: " + timeEl.textContent + " | Lượt: " + moves);
+                        alert("Bạn thắng! Thời gian: " + timeEl.textContent + " | Lượt: " + moves);
                     }, 300);
                 }
             } else {
@@ -109,7 +107,7 @@ document.getElementById("resetBtn").addEventListener("click", resetGame);
 function resetGame() {
     // Reset timer
     stopTimer();
-    timeEl.textContent = "0s";
+    timeEl.textContent = "00:00:00";
     gameStarted = false;
 
     // Reset moves + score
@@ -127,6 +125,7 @@ function resetGame() {
     game.innerHTML = "";
 
     // Shuffle emoji mới
+    emojis = [...baseEmojis, ...baseEmojis];
     emojis.sort(() => Math.random() - 0.5);
 
     // Render lại y như lần đầu
@@ -168,7 +167,7 @@ function resetGame() {
                     if (score === 8) {
                         stopTimer();
                         setTimeout(() => {
-                            alert("🎉 Bạn thắng! Thời gian: " + timeEl.textContent + " | Lượt: " + moves);
+                            alert("Bạn thắng! Thời gian: " + timeEl.textContent + " | Lượt: " + moves);
                         }, 300);
                     }
 
