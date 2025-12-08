@@ -30,7 +30,6 @@ function stopTimer() {
     clearInterval(timerInterval);
 }
 
-// --- GAME ---
 let baseEmojis = ["🐶", "🐱", "🐼", "🐸", "🦊", "🐯", "🐷", "💩"];
 let emojis = [...baseEmojis, ...baseEmojis];
 emojis.sort(() => Math.random() - 0.5);
@@ -40,7 +39,6 @@ let lock = false;
 let score = 0;
 let moves = 0;
 
-// RENDER BOARD
 emojis.forEach(emoji => {
     const card = document.createElement("div");
     card.className = "card";
@@ -56,7 +54,6 @@ emojis.forEach(emoji => {
 
     card.addEventListener("click", () => {
 
-        // Start timer on first flip
         if (!gameStarted) {
             gameStarted = true;
             startTimer();
@@ -69,17 +66,15 @@ emojis.forEach(emoji => {
         if (!firstCard) {
             firstCard = card;
         } else {
-            // Count move
+
             moves++;
             movesEl.textContent = moves;
 
             if (firstCard.dataset.emoji === card.dataset.emoji) {
-                // Correct match
                 score++;
                 scoreEl.textContent = score;
                 firstCard = null;
 
-                // Win
                 if (score === 8) {
                     stopTimer();
                     setTimeout(() => {
@@ -87,14 +82,13 @@ emojis.forEach(emoji => {
                     }, 300);
                 }
             } else {
-                // Wrong → flip back
                 lock = true;
                 setTimeout(() => {
                     firstCard.classList.remove("flipped");
                     card.classList.remove("flipped");
                     firstCard = null;
                     lock = false;
-                }, 500);
+                }, 800);
             }
         }
     });
@@ -105,30 +99,24 @@ emojis.forEach(emoji => {
 document.getElementById("resetBtn").addEventListener("click", resetGame);
 
 function resetGame() {
-    // Reset timer
     stopTimer();
     timeEl.textContent = "00:00:00";
     gameStarted = false;
 
-    // Reset moves + score
     moves = 0;
     movesEl.textContent = moves;
 
     score = 0;
     scoreEl.textContent = score;
 
-    // Reset logic
     firstCard = null;
     lock = false;
 
-    // Clear board
     game.innerHTML = "";
 
-    // Shuffle emoji mới
     emojis = [...baseEmojis, ...baseEmojis];
     emojis.sort(() => Math.random() - 0.5);
 
-    // Render lại y như lần đầu
     emojis.forEach(emoji => {
         const card = document.createElement("div");
         card.className = "card";
@@ -178,7 +166,7 @@ function resetGame() {
                         card.classList.remove("flipped");
                         firstCard = null;
                         lock = false;
-                    }, 500);
+                    }, 800);
                 }
             }
         });
